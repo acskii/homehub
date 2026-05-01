@@ -1,0 +1,75 @@
+# Current containers deployed on: docker-compose up [-d]
+# (1) main_database: Main PostgreSQL database container, contains production data
+#                    HANDLE WITH CAUTION
+# (2) test_database: Testing PostgreSQL database container, can contain any data
+#                    USE THIS ONE TO TEST SCHEMA CHANGES, AND REFACTORING TABLES
+# Both databases use same username and password
+# --------------------------------------------------------------------------------
+#                     - Andrew Sameh (acskii)
+#
+
+services:
+  main_database:
+    image: postgres:latest
+
+    container_name: main_database
+
+    secrets:
+      - database_username
+      - database_password
+
+    environment:
+      POSTGRES_DB: homehub
+      POSTGRES_USER_FILE: /run/secrets/database_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
+
+    ports:
+      - "5000:5432"
+
+    networks:
+      - homehub
+
+    volumes:
+      # Changed to /var/lib/postgresql instead of /var/lib/postgresql/data
+      # as of version 18+, check this pull: https://github.com/docker-library/postgres/pull/1259
+      - main_database:/var/lib/postgresql
+
+    restart: unless-stopped
+
+  test_database:
+    image: postgres:latest
+
+    container_name: test_database
+
+    secrets:
+      - database_username
+      - database_password
+
+    environment:
+      POSTGRES_DB: testhub
+      POSTGRES_USER_FILE: /run/secrets/database_username
+      POSTGRES_PASSWORD_FILE: /run/secrets/database_password
+
+    ports:
+      - "5050:5432"
+
+    networks:
+      - homehub
+
+    volumes:
+      - test_database:/var/lib/postgresql
+
+    restart: unless-stopped
+
+networks:
+  homehub:
+
+secrets:
+  database_username:
+    file: secrets/DATABASE_USERNAME.txt
+  database_password:
+    file: secrets/DATABASE_PASSWORD.txt
+
+volumes:
+  main_database:
+  test_database:

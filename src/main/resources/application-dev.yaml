@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: ${TEST_DATABASE_URL}
+
+    jpa:
+      hibernate:
+        ddl-auto: update
+
+server:
+  port: 8080

@@ -1,0 +1,14 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${PROD_DATABASE_URL}
+
+    jpa:
+      hibernate:
+        ddl-auto: validate
+
+server:
+  port: 8000
